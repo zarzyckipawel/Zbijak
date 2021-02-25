@@ -12,45 +12,19 @@ namespace Szachy
 
         public override IEnumerable<Pole> DajDostepnePola()
         {
-            var kolumna = this.Pole.Kolumna - 1;
-            var rzad = this.Pole.Rzad - 1;            
-
-            while (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
-            {               
-                yield return Szachownica.GetPole(rzad, kolumna);
-                kolumna--;
-                rzad--;
-            }
-
-            kolumna = this.Pole.Kolumna + 1;
-            rzad = this.Pole.Rzad - 1;
-
-            while (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
+            var kierunki = new[] { (-1,-1) , (-1, 1), (1, -1), (1, 1) };
+            foreach(var kierunek in kierunki)
             {
-                yield return Szachownica.GetPole(rzad, kolumna);
-                kolumna++;
-                rzad--;
-            }
+                var kolumna = this.Pole.Kolumna + kierunek.Item1;
+                var rzad = this.Pole.Rzad + kierunek.Item2;
 
-            kolumna = this.Pole.Kolumna + 1;
-            rzad = this.Pole.Rzad + 1;
-
-            while (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
-            {
-                yield return Szachownica.GetPole(rzad, kolumna);
-                kolumna++;
-                rzad++;
-            }
-
-            kolumna = this.Pole.Kolumna - 1;
-            rzad = this.Pole.Rzad + 1;
-
-            while (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
-            {
-                yield return Szachownica.GetPole(rzad, kolumna);
-                kolumna--;
-                rzad++;
-            }
+                while (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
+                {
+                    yield return Szachownica.GetPole(rzad, kolumna);
+                    kolumna += kierunek.Item1;
+                    rzad += kierunek.Item2;
+                }
+            }            
         }
     }
 }
