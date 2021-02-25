@@ -31,6 +31,7 @@ namespace SzachyTests
             Assert.IsTrue(Wieza.DajDostepnePola().Contains(szachownica.GetPole('g', 8)));
             Assert.IsTrue(Wieza.DajDostepnePola().Contains(szachownica.GetPole('h', 8)));
         }
+
         [TestMethod]
         public void SprawdzPolaWiezyWSrodkuSzachownicy()
         {

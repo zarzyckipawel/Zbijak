@@ -13,7 +13,7 @@ namespace SzachyTests
         public void SprawdzPolaKrolaWRoguSzachownicy()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("R7/8/8/8/8/8/8/8");
+            szachownica.WgrajFEN("K7/8/8/8/8/8/8/8");
             var Krol = szachownica.GetPole('a', 8).Bierka;
             Assert.AreEqual(3, Krol.DajDostepnePola().Count());
             Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('a',7)));
@@ -24,7 +24,7 @@ namespace SzachyTests
         public void SprawdzPolaKrolaWSrodkuSzachownicy()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/2R5/8/8/8/8/8");
+            szachownica.WgrajFEN("8/8/2K5/8/8/8/8/8");
             var Krol = szachownica.GetPole('c', 6).Bierka;
             Assert.AreEqual(8, Krol.DajDostepnePola().Count());
             Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('c', 5)));
@@ -41,7 +41,7 @@ namespace SzachyTests
         public void SprawdzPolaKrolaWSrodkuSzachownicyZablokowanegoPrzezKrola()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/2R5/2Q5/8/8/8/8");
+            szachownica.WgrajFEN("8/8/2K5/2Q5/8/8/8/8");
             var Krol = szachownica.GetPole('c', 6).Bierka;
             Assert.AreEqual(7, Krol.DajDostepnePola().Count());
             Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('c', 7)));

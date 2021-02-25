@@ -35,7 +35,7 @@ namespace SzachyTests
         public void SprawdzPolaCzarnegoPionaNaSrodku()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/p7/8/8/8/8/8/8");
+            szachownica.WgrajFEN("8/8/p7/8/8/8/8/8");
             var Pion = szachownica.GetPole('a', 6).Bierka;
             Assert.AreEqual(1, Pion.DajDostepnePola().Count());
             Assert.IsTrue(Pion.DajDostepnePola().Contains(szachownica.GetPole('a', 5)));
@@ -45,7 +45,7 @@ namespace SzachyTests
         public void SprawdzPolaBialegoPionaNaSrodku()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/8/8/8/8/1P6/8/8");
+            szachownica.WgrajFEN("8/8/8/8/8/1P6/8/8");
             var Pion = szachownica.GetPole('b', 3).Bierka;
             Assert.AreEqual(1, Pion.DajDostepnePola().Count());
             Assert.IsTrue(Pion.DajDostepnePola().Contains(szachownica.GetPole('b', 4)));
@@ -55,7 +55,7 @@ namespace SzachyTests
         public void SprawdzPolaBialegoPionaZablokowanegoPrzezWlasnego()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/8/8/8/1P6/1P6/8/8");
+            szachownica.WgrajFEN("8/8/8/8/1P6/1P6/8/8");
             var Pion = szachownica.GetPole('b', 3).Bierka;
             Assert.AreEqual(0, Pion.DajDostepnePola().Count());
         }
@@ -64,7 +64,7 @@ namespace SzachyTests
         public void SprawdzPolaBialegoPionaZablokowanegoPrzezCudzego()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/8/8/8/1p6/1P6/8/8");
+            szachownica.WgrajFEN("8/8/8/8/1p6/1P6/8/8");
             var Pion = szachownica.GetPole('b', 3).Bierka;
             Assert.AreEqual(0, Pion.DajDostepnePola().Count());
         }
@@ -73,7 +73,7 @@ namespace SzachyTests
         public void SprawdzPolaBialegoPionaZBiciem()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/8/8/8/2p5/1P6/8/8");
+            szachownica.WgrajFEN("8/8/8/8/2p5/1P6/8/8");
             var Pion = szachownica.GetPole('b', 3).Bierka;
             Assert.AreEqual(2, Pion.DajDostepnePola().Count());
             Assert.IsTrue(Pion.DajDostepnePola().Contains(szachownica.GetPole('b', 4)));
@@ -84,7 +84,7 @@ namespace SzachyTests
         public void SprawdzPolaCzarnegoPionaZBiciem()
         {
             var szachownica = new Szachy.Szachownica();
-            szachownica.WgrajFEN("8/8/8/8/8/2p5/1P6/8/8");
+            szachownica.WgrajFEN("8/8/8/8/2p5/1P6/8/8");
             var Pion = szachownica.GetPole('c', 4).Bierka;
             Assert.AreEqual(2, Pion.DajDostepnePola().Count());
             Assert.IsTrue(Pion.DajDostepnePola().Contains(szachownica.GetPole('c', 3)));
