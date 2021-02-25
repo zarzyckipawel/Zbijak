@@ -5,11 +5,14 @@ namespace Szachy
     public class Pole
     {
 
-        public Pole(int i, int j)
+        public Pole(int rzad, int kolumna, Kolor kol)
         {
-            Rzad = i;
-            Kolumna = j;
+            Rzad = rzad;
+            Kolumna = kolumna;
+            Kolor = kol;
         }
+
+        public Kolor Kolor { get; set; }
 
         public string Koordynaty
         {

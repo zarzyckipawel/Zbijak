@@ -17,16 +17,19 @@ namespace Szachy
         public Szachownica()
         {
             var pola = new List<Pole>();
-            for (int i = 1; i < 9; i++)
+            var kolor = Kolor.Bialy;
+            for (int rzad = 1; rzad < 9; rzad++)
             {
-                for (int j = 1; j < 9; j++)
+                for (int kolumna = 1; kolumna < 9; kolumna++)
                 {
-                    pola.Add(new Pole(i,j));
+                    pola.Add(new Pole(rzad,kolumna, kolor));
+                    kolor = kolor == Kolor.Bialy ? Kolor.Czarny : Kolor.Bialy;
                 }
+                kolor = kolor == Kolor.Bialy ? Kolor.Czarny : Kolor.Bialy;
             }
             Pola = pola;
         }
-
+        
         internal bool PoleNaKtorymNieMoznaPostawicFigury(int rzad, int kolumna, Kolor kolor)
         {
             return PozaSzachownica(rzad, kolumna) || PoleZajetePrzezWlasnaFigure(rzad, kolumna, kolor);

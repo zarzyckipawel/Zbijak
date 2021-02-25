@@ -117,6 +117,28 @@ app {
     color: red;
 }
 
+.szachownica {
+    width: 400px;
+    height: 400px;
+}
+
+.rzad {
+    height: 50px;
+}
+
+.pole {
+    height: 50px;
+    width: 50px;
+}
+
+.bialy {
+    background-color:antiquewhite;
+}
+
+.czarny {
+    background-color: saddlebrown;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

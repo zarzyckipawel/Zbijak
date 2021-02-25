@@ -1,13 +1,43 @@
 ﻿@page "/counter"
+@using Szachy
+@using System.IO
+@using Helpers
+@inject PiecesHelper PiecesHelper
 
-<h1>Counter</h1>
+<h1>Zbijak</h1>
 
-<p>Current count: @currentCount</p>
+<table class="szachownica">
+    <tbody>
+        @for (int rzad = 1; rzad < 9; rzad++)
+        {
+            <tr class="rzad">
+                @for (int kolumna = 1; kolumna < 9; kolumna++)
+                {
+                    var bierka = szachownica.GetPole(rzad, kolumna).Bierka;
+                    var klasaKoloru = szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
+                    <td class="pole @klasaKoloru">
+                        @if (bierka != null)
+                        {
+                            <img src="@PiecesHelper.GetImageSrc(bierka)" />
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="InitializeFEN">Click me</button>
 
 @code {
+    private Szachownica szachownica = new Szachownica();
     private int currentCount = 0;
+
+    private async void InitializeFEN()
+    {
+        szachownica.WgrajFEN("6r1/Q4p2/4pq1k/3p2Nb/P4P1K/4P3/7P/2R5");
+    }
+
 
     private void IncrementCount()
     {
