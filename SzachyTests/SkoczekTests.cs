@@ -43,12 +43,12 @@ namespace SzachyTests
             szachownica.WgrajFEN("1Q6/8/2N5/8/3P4/8/8/8");
             var Skoczek = szachownica.GetPole('c', 6).Bierka;
             Assert.AreEqual(6, Skoczek.DajDostepnePola().Count());
-            Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('b', 8)));
             Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('d', 8)));
+            Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('b', 4)));
             Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('e', 7)));
             Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('e', 5)));
-            Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('d', 4)));
             Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('a', 5)));
+            Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('a', 7)));
         }
     }
 }
