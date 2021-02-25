@@ -53,5 +53,28 @@ namespace SzachyTests
             Assert.IsTrue(goniec.DajDostepnePola().Contains(szachownica.GetPole('c', 8)));
             Assert.IsTrue(goniec.DajDostepnePola().Contains(szachownica.GetPole('a', 6)));
         }
+
+        [TestMethod]
+        public void SprawdzPolaGoncaWSrodkuSzachownicyZObcaFiguraDoBicia()
+        {
+            var szachownica = new Szachy.Szachownica();
+            szachownica.WgrajFEN("8/1B6/2n5/8/8/8/8/8");
+            var goniec = szachownica.GetPole('b', 7).Bierka;
+            Assert.AreEqual(4, goniec.DajDostepnePola().Count());
+            Assert.IsTrue(goniec.DajDostepnePola().Contains(szachownica.GetPole('a', 8)));
+            Assert.IsTrue(goniec.DajDostepnePola().Contains(szachownica.GetPole('c', 8)));
+            Assert.IsTrue(goniec.DajDostepnePola().Contains(szachownica.GetPole('a', 6)));
+            Assert.IsTrue(goniec.DajDostepnePola().Contains(szachownica.GetPole('c', 6)));
+        }
+
+        [TestMethod]
+        public void SprawdzCzyGoniecRozpoznaFigureDoBicia()
+        {
+            var szachownica = new Szachy.Szachownica();
+            szachownica.WgrajFEN("8/1B6/2n5/8/8/8/8/8");
+            var goniec = szachownica.GetPole('b', 7).Bierka;
+            Assert.AreEqual(1, goniec.DajZaatakowaneBierki().Count());
+            Assert.IsTrue(goniec.DajZaatakowaneBierki().Contains(szachownica.GetPole('c', 6)));
+        }
     }
 }

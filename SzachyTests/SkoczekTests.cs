@@ -50,5 +50,15 @@ namespace SzachyTests
             Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('a', 5)));
             Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('a', 7)));
         }
+
+        [TestMethod]
+        public void SprawdzCzySkoczekRozpoznajeFigureDoBicia()
+        {
+            var szachownica = new Szachy.Szachownica();
+            szachownica.WgrajFEN("1q6/8/2N5/8/3P4/8/8/8");
+            var Skoczek = szachownica.GetPole('c', 6).Bierka;
+            Assert.AreEqual(1, Skoczek.DajZaatakowaneBierki().Count());
+            Assert.IsTrue(Skoczek.DajDostepnePola().Contains(szachownica.GetPole('b', 8)));
+        }
     }
 }

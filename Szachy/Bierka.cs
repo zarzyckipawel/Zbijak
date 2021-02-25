@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Szachy
 {
@@ -13,6 +14,11 @@ namespace Szachy
         public Pole Pole { get; set; }
 
         public abstract IEnumerable<Pole> DajDostepnePola();
+
+        public IEnumerable<Pole> DajZaatakowaneBierki()
+        {
+            return DajDostepnePola().Where(d => d.Bierka != null);
+        }
 
         public Bierka(Szachownica sz, Kolor k)
         {
@@ -29,7 +35,12 @@ namespace Szachy
 
                 while (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
                 {
-                    yield return Szachownica.GetPole(rzad, kolumna);
+                    var pole = Szachownica.GetPole(rzad, kolumna);
+                    yield return pole;
+                    if (pole.Bierka != null && pole.Bierka.Kolor != Kolor)
+                    {
+                        break;
+                    }
                     kolumna += kierunek.Item1;
                     rzad += kierunek.Item2;
                 }
