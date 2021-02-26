@@ -131,6 +131,14 @@ app {
     width: 50px;
 }
 
+.zaznaczone1 {
+    background-color: aquamarine;
+}
+
+.zaznaczone2 {
+    background-color: blueviolet;
+}
+
 .bialy {
     background-color:antiquewhite;
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Zbijak.Data;
 using Zbijak.Helpers;
@@ -31,6 +32,11 @@ namespace Zbijak
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<PiecesHelper>();
+            services.AddScoped(sp =>
+                    new HttpClient
+                    {
+                        BaseAddress = new Uri("https://localhost:44343/")
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

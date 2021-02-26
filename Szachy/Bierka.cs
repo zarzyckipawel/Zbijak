@@ -15,9 +15,9 @@ namespace Szachy
 
         public abstract IEnumerable<Pole> DajDostepnePola();
 
-        public IEnumerable<Pole> DajZaatakowaneBierki()
+        public IEnumerable<Bierka> DajZaatakowaneBierki()
         {
-            return DajDostepnePola().Where(d => d.Bierka != null);
+            return DajDostepnePola().Where(d => d.Bierka != null).Select(d => d.Bierka);
         }
 
         public Bierka(Szachownica sz, Kolor k)

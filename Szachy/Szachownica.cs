@@ -14,6 +14,11 @@ namespace Szachy
             return Pola.Where(d => d.Bierka != null).Select(d => d.Bierka);
         }
 
+        public IList<Bierka> GetZaataKowaneBierki()
+        {
+            return GetBierki().SelectMany(d => d.DajZaatakowaneBierki()).Distinct().ToList();
+        }
+
         public Szachownica()
         {
             var pola = new List<Pole>();

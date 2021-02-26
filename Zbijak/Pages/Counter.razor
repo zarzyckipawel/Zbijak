@@ -2,9 +2,15 @@
 @using Szachy
 @using System.IO
 @using Helpers
+@using System.Text.RegularExpressions
 @inject PiecesHelper PiecesHelper
+@using System.Net.Http
+@inject HttpClient Http
 
-<h1>Zbijak</h1>
+<h1>Zaatakowane bierki:</h1>
+
+<h3>Do znalezienia: @atakiDoZnalezienia.Except(atakiZnalezione).Count()</h3>
+<h3>Błędy: @bledy</h3>
 
 <table class="szachownica">
     <tbody>
@@ -18,7 +24,7 @@
                     <td class="pole @klasaKoloru">
                         @if (bierka != null)
                         {
-                            <img src="@PiecesHelper.GetImageSrc(bierka)" />
+                            <img class="@(bierkiZaznaczone.Contains(bierka) ? "zaznaczone1" : "") @(atakiZnalezione.Contains(bierka) ? "zaznaczone2" : "")" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
                         }
                     </td>
                 }
@@ -29,18 +35,73 @@
 
 <button class="btn btn-primary" @onclick="InitializeFEN">Click me</button>
 
+
+
 @code {
     private Szachownica szachownica = new Szachownica();
-    private int currentCount = 0;
+    private IList<Bierka> atakiDoZnalezienia = new List<Bierka>();
+    private IList<Bierka> atakiZnalezione = new List<Bierka>();
+    private int bledy = 0;
+    private IList<Bierka> bierkiZaznaczone = new List<Bierka>();
+    private Regex fenRegex = new Regex(@"([rnbqkpRNBQKP1-8]+\/){7}[rnbqkpRNBQKP1-8]+");
+    private string[] fens;
+    private Random random = new Random();
 
     private async void InitializeFEN()
     {
-        szachownica.WgrajFEN("6r1/Q4p2/4pq1k/3p2Nb/P4P1K/4P3/7P/2R5");
+        if (fens == null)
+        {
+            var fensResponse = await Http.GetStringAsync("FENs/MateIn4.json");
+            fens = fensResponse.Split("\r\n").Where(d => fenRegex.IsMatch(d)).ToArray();
+        }
+        szachownica.WgrajFEN(fens[random.Next(0, fens.Count())]);
+        atakiDoZnalezienia = szachownica.GetZaataKowaneBierki();
     }
 
 
-    private void IncrementCount()
+    private void PrzycisnietoFigure(Bierka b, MouseEventArgs mouseEventArgs)
     {
-        currentCount++;
+
+        if (mouseEventArgs.Button == 2) // prawy klawisz
+        {
+            bierkiZaznaczone.Clear();
+            foreach (var bierka in b.DajZaatakowaneBierki())
+            {
+                bierkiZaznaczone.Add(bierka);
+            }
+        }
+    }
+
+    private void PuszczonoFigure(Bierka b, MouseEventArgs mouseEventArgs)
+    {
+        if (mouseEventArgs.Button == 2) // prawy klawisz
+        {
+            bierkiZaznaczone.Clear();
+        }
+        if (mouseEventArgs.Button == 1) // lewy klawisz
+        {
+            if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
+            {
+                atakiZnalezione.Add(b);
+            }
+            else
+            {
+                bledy++;
+            }
+        }
+    }
+
+    private void Kliknieto(Bierka b)
+    {
+        if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
+        {
+            atakiZnalezione.Add(b);
+        }
+        else
+        {
+            bledy++;
+        }
     }
 }
+
+
