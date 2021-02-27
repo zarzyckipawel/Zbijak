@@ -10,8 +10,8 @@
 
 <h1>Zaatakowane bierki:</h1>
 
-<h3>Do znalezienia: @atakiDoZnalezienia.Except(atakiZnalezione).Count()</h3>
-<h3>Błędy: @bledy</h3>
+<h3>Do znalezienia: @zbijak.atakiDoZnalezienia.Except(zbijak.atakiZnalezione).Count()</h3>
+<h3>Błędy: @zbijak.bledy</h3>
 
 <table class="szachownica">
     <tbody>
@@ -20,13 +20,13 @@
         <tr class="rzad">
             @for (int kolumna = 1; kolumna < 9; kolumna++)
                 {
-                    var bierka = szachownica.GetPole(rzad, kolumna).Bierka;
-                    var klasaKoloru = szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
+                    var bierka = zbijak.szachownica.GetPole(rzad, kolumna).Bierka;
+                    var klasaKoloru = zbijak.szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
             <td class="pole @klasaKoloru">
                 @if (bierka != null)
-                        {
-                <img class="@(bierkiZaznaczone.Contains(bierka) ? "zaznaczone1" : "") @(atakiZnalezione.Contains(bierka) ? "zaznaczone2" : "")" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
-                        }
+                {
+                <img class="@(zbijak.bierkiZaznaczone.Contains(bierka) ? "zaznaczone1" : "") @(zbijak.atakiZnalezione.Contains(bierka) ? "zaznaczone2" : "")" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                }
             </td>
                 }
         </tr>
@@ -34,42 +34,27 @@
     </tbody>
 </table>
 
-<button class="btn btn-primary" @onclick="InitializeFEN">Click me</button>
+<button class="btn btn-primary" @onclick="dajNastepne">Następne zadanie</button>
 
 
 
 @code {
-    private Szachownica szachownica = new Szachownica();
-    private IList<Bierka> atakiDoZnalezienia = new List<Bierka>();
-    private IList<Bierka> atakiZnalezione = new List<Bierka>();
-    private int bledy = 0;
-    private IList<Bierka> bierkiZaznaczone = new List<Bierka>();
-    private Regex fenRegex = new Regex(@"([rnbqkpRNBQKP1-8]+\/){7}[rnbqkpRNBQKP1-8]+");
-    private string[] fens;
-    private Random random = new Random();
+    Szachy.Treningi.Zbijak zbijak = new Szachy.Treningi.Zbijak();
 
-    private async void InitializeFEN()
-    {
-        if (fens == null)
-        {
-            var fensResponse = await Http.GetStringAsync("FENs/MateIn4.json");
-            fens = fensResponse.Split("\r\n").Where(d => fenRegex.IsMatch(d)).ToArray();
-        }
-        szachownica.WgrajFEN(fens[random.Next(0, fens.Count())]);
-        atakiDoZnalezienia = szachownica.GetZaataKowaneBierki();
+    protected override async Task OnInitializedAsync()
+    {        
+        Regex fenRegex = new Regex(@"([rnbqkpRNBQKP1-8]+\/){7}[rnbqkpRNBQKP1-8]+");
+        var fensResponse = await Http.GetStringAsync("FENs/MateIn4.json");
+        var fens = fensResponse.Split("\r\n").Where(d => fenRegex.IsMatch(d)).ToArray();
+        zbijak = new Szachy.Treningi.Zbijak(fens);
     }
-
 
     private void PrzycisnietoFigure(Bierka b, MouseEventArgs mouseEventArgs)
     {
 
         if (mouseEventArgs.Button == 2) // prawy klawisz
         {
-            bierkiZaznaczone.Clear();
-            foreach (var bierka in b.DajZaatakowaneBierki())
-            {
-                bierkiZaznaczone.Add(bierka);
-            }
+            zbijak.PokazBierkiZaatakoanePrzez(b);
         }
     }
 
@@ -77,21 +62,24 @@
     {
         if (mouseEventArgs.Button == 2) // prawy klawisz
         {
-            bierkiZaznaczone.Clear();
+            zbijak.SchowajBierkiZaatakowane();
         }
+    }
+
+    private void dajNastepne()
+    {
+        zbijak.NastepnaPozycja();
     }
 
     private async void Kliknieto(Bierka b)
     {
-        if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
+        if(zbijak.WskazanoBierke(b))
         {
-            atakiZnalezione.Add(b);
             await js.InvokeVoidAsync("PlayAudioFile", "/sounds/success.mp3");
         }
         else
         {
             await js.InvokeVoidAsync("PlayAudioFile", "/sounds/failure.wav");
-            bledy++;
         }
     }
 }
