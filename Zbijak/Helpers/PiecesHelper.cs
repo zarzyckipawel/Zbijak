@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Szachy;
 
-namespace Zbijak.Helpers
+namespace SzkolneGryEdukacyjne.Helpers
 {
     public class PiecesHelper
     {

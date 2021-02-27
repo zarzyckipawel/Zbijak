@@ -131,13 +131,14 @@ app {
     width: 50px;
 }
 
-.zaznaczone1 {
+.zaznaczenie {
+    background-color: blueviolet;
+}
+
+.podglad {
     background-color: aquamarine;
 }
 
-.zaznaczone2 {
-    background-color: blueviolet;
-}
 
 .bialy {
     background-color:antiquewhite;

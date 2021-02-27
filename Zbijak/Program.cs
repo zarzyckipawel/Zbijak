@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Zbijak
+namespace SzkolneGryEdukacyjne
 {
     public class Program
     {

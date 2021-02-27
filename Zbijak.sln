@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zbijak", "Zbijak\Zbijak.csproj", "{7F2460AF-4033-4FF3-8402-DCF78AE60B19}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SzkolneGryEdukacyjne", "Zbijak\SzkolneGryEdukacyjne.csproj", "{7F2460AF-4033-4FF3-8402-DCF78AE60B19}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Szachy", "Szachy\Szachy.csproj", "{685D45E3-5253-4A70-81B5-E725B7B4D35F}"
 EndProject

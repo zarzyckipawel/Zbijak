@@ -10,10 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Zbijak.Data;
-using Zbijak.Helpers;
+using SzkolneGryEdukacyjne.Helpers;
 
-namespace Zbijak
+namespace SzkolneGryEdukacyjne
 {
     public class Startup
     {
@@ -30,7 +29,6 @@ namespace Zbijak
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<PiecesHelper>();
             services.AddScoped(sp =>
                     new HttpClient

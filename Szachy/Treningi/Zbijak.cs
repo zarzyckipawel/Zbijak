@@ -15,6 +15,9 @@ namespace Szachy.Treningi
         public IList<string> fenRepository = new List<String>(); 
         public Random random = new Random();
 
+        public int RundaDobre = 0;
+        public int RundaBledy = 0;
+
         public Zbijak(string[] fens)
         {
             fenRepository = fens.ToList();
@@ -40,20 +43,35 @@ namespace Szachy.Treningi
 
         public bool WskazanoBierke(Bierka b)
         {
+            
             if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
             {
                 atakiZnalezione.Add(b);
-                return true;
-                
+                if(atakiDoZnalezienia.Except(atakiZnalezione).Count() == 0)
+                {
+                    NastepnaRunda();
+                }
+                RundaDobre++;
+
+                return true;                
             }
             else
             {                
                 bledy++;
+                RundaBledy++;
                 return false;
             }
         }
 
-        public void NastepnaPozycja()
+        public void NastepnaRunda()
+        {
+            NastepnaPozycja();
+            bledy = 0;
+            RundaDobre = 0;
+            RundaBledy = 0;
+        }
+
+        private void NastepnaPozycja()
         {
             do
             {

@@ -1,4 +1,4 @@
-﻿@page "/counter"
+﻿@page "/zbijak"
 @using Szachy
 @using System.IO
 @using Helpers
@@ -22,10 +22,12 @@
                 {
                     var bierka = zbijak.szachownica.GetPole(rzad, kolumna).Bierka;
                     var klasaKoloru = zbijak.szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
-            <td class="pole @klasaKoloru">
+                    var podglad = zbijak.bierkiZaznaczone.Contains(bierka) ? "podglad" : "";
+                    var zaznaczenie = zbijak.atakiZnalezione.Contains(bierka) ? "zaznaczenie" : "";
+            <td class="pole @klasaKoloru podglad zaznaczenie">
                 @if (bierka != null)
                 {
-                <img class="@(zbijak.bierkiZaznaczone.Contains(bierka) ? "zaznaczone1" : "") @(zbijak.atakiZnalezione.Contains(bierka) ? "zaznaczone2" : "")" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                <img src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
                 }
             </td>
                 }
@@ -68,7 +70,7 @@
 
     private void dajNastepne()
     {
-        zbijak.NastepnaPozycja();
+        zbijak.NastepnaRunda();
     }
 
     private async void Kliknieto(Bierka b)
