@@ -36,7 +36,9 @@ namespace Zbijak
                     new HttpClient
                     {
                         BaseAddress = new Uri("https://localhost:44343/")
+                        //BaseAddress = new Uri("http://szkolnegryedukacyjne.pl/")
                     });
+            services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -6,6 +6,7 @@
 @inject PiecesHelper PiecesHelper
 @using System.Net.Http
 @inject HttpClient Http
+@inject IJSRuntime js;
 
 <h1>Zaatakowane bierki:</h1>
 
@@ -16,19 +17,19 @@
     <tbody>
         @for (int rzad = 1; rzad < 9; rzad++)
         {
-            <tr class="rzad">
-                @for (int kolumna = 1; kolumna < 9; kolumna++)
+        <tr class="rzad">
+            @for (int kolumna = 1; kolumna < 9; kolumna++)
                 {
                     var bierka = szachownica.GetPole(rzad, kolumna).Bierka;
                     var klasaKoloru = szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
-                    <td class="pole @klasaKoloru">
-                        @if (bierka != null)
+            <td class="pole @klasaKoloru">
+                @if (bierka != null)
                         {
-                            <img class="@(bierkiZaznaczone.Contains(bierka) ? "zaznaczone1" : "") @(atakiZnalezione.Contains(bierka) ? "zaznaczone2" : "")" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                <img class="@(bierkiZaznaczone.Contains(bierka) ? "zaznaczone1" : "") @(atakiZnalezione.Contains(bierka) ? "zaznaczone2" : "")" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
                         }
-                    </td>
+            </td>
                 }
-            </tr>
+        </tr>
         }
     </tbody>
 </table>
@@ -72,33 +73,24 @@
         }
     }
 
-    private void PuszczonoFigure(Bierka b, MouseEventArgs mouseEventArgs)
+    private async void PuszczonoFigure(Bierka b, MouseEventArgs mouseEventArgs)
     {
         if (mouseEventArgs.Button == 2) // prawy klawisz
         {
             bierkiZaznaczone.Clear();
         }
-        if (mouseEventArgs.Button == 1) // lewy klawisz
-        {
-            if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
-            {
-                atakiZnalezione.Add(b);
-            }
-            else
-            {
-                bledy++;
-            }
-        }
     }
 
-    private void Kliknieto(Bierka b)
+    private async void Kliknieto(Bierka b)
     {
         if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
         {
             atakiZnalezione.Add(b);
+            await js.InvokeVoidAsync("PlayAudioFile", "/sounds/success.mp3");
         }
         else
         {
+            await js.InvokeVoidAsync("PlayAudioFile", "/sounds/failure.wav");
             bledy++;
         }
     }

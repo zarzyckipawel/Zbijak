@@ -74,7 +74,7 @@ namespace SzachyTests
             szachownica.WgrajFEN("8/1B6/2n5/8/8/8/8/8");
             var goniec = szachownica.GetPole('b', 7).Bierka;
             Assert.AreEqual(1, goniec.DajZaatakowaneBierki().Count());
-            Assert.IsTrue(goniec.DajZaatakowaneBierki().Contains(szachownica.GetPole('c', 6)));
+            Assert.IsTrue(goniec.DajZaatakowaneBierki().Contains(szachownica.GetPole('c', 6).Bierka));
         }
     }
 }

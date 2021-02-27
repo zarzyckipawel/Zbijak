@@ -140,7 +140,7 @@ namespace SzachyTests
             szachownica.WgrajFEN("8/8/2Q5/8/2q5/8/8/8");
             var hetman = szachownica.GetPole('c', 6).Bierka;
             Assert.AreEqual(1, hetman.DajZaatakowaneBierki().Count());
-            Assert.IsTrue(hetman.DajZaatakowaneBierki().Contains(szachownica.GetPole('c', 4)));
+            Assert.IsTrue(hetman.DajZaatakowaneBierki().Contains(szachownica.GetPole('c', 4).Bierka));
         }
     }
 }

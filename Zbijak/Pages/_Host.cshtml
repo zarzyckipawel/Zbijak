@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Zbijak</title>
+    <title>Szkolne Gry Edukacyjne</title>
     <base href="~/" />
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
@@ -35,6 +35,16 @@
     <script src="_framework/blazor.server.js"></script>
     <script type="text/javascript">
         document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+    <script>
+        window.PlayAudioFile = (src) => {
+            var sound = document.createElement('audio');
+            sound.src = src;
+            sound.type = 'audio/mpeg';
+            document.body.appendChild(sound);
+            sound.load();
+            sound.play();
+        }
     </script>
 </body>
 </html>
