@@ -131,6 +131,15 @@ app {
     width: 50px;
 }
 
+
+.bialy {
+    background-color: antiquewhite;
+}
+
+.czarny {
+    background-color: saddlebrown;
+}
+
 .zaznaczenie {
     background-color: blueviolet;
 }
@@ -139,14 +148,19 @@ app {
     background-color: aquamarine;
 }
 
-
-.bialy {
-    background-color:antiquewhite;
+.koniecCzasu {
+    color: brown;
 }
 
-.czarny {
-    background-color: saddlebrown;
+.blednie {
+    color:firebrick;
 }
+
+.dobrze {
+    color: forestgreen;
+}
+
+
 
 #blazor-error-ui {
     background: lightyellow;

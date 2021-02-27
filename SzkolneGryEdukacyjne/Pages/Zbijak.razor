@@ -1,0 +1,141 @@
+﻿@page "/zbijak"
+@using Szachy
+@using System.IO
+@using Helpers
+@using System.Text.RegularExpressions
+@inject PiecesHelper PiecesHelper
+@using System.Net.Http
+@inject HttpClient Http
+@inject IJSRuntime js;
+
+
+@if (!ShowPopup)
+{
+    <h3>Do znalezienia: <b>@zbijak.atakiDoZnalezienia.Except(zbijak.atakiZnalezione).Count()</b> Błędy: <b>@zbijak.bledy</b></h3>
+
+    <table class="szachownica">
+        <tbody>
+            @for (int rzad = 1; rzad < 9; rzad++)
+            {
+                <tr class="rzad">
+                    @for (int kolumna = 1; kolumna < 9; kolumna++)
+                    {
+                        var bierka = zbijak.szachownica.GetPole(rzad, kolumna).Bierka;
+                        var klasaKoloru = zbijak.szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
+                        var podglad = zbijak.bierkiZaznaczone.Contains(bierka) ? "podglad" : "";
+                        var zaznaczenie = zbijak.atakiZnalezione.Contains(bierka) ? "zaznaczenie" : "";
+                        <td class="pole @klasaKoloru @podglad @zaznaczenie">
+                            @if (bierka != null)
+                            {
+                                <img src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        <h3>Twój wynik: <b>@zbijak.RundaPunkty</b> Czas: <span class="@(timeValue < new TimeSpan(0,1,0) ? "koniecCzasu" : "")"><b>@timeValue</b></span></h3>
+        <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
+    </div>
+
+    <button class="btn btn-primary mt-3" @onclick="dajNastepne">Zaczynamy</button>
+}
+else
+{
+    <div class="szachownica">
+        <h3>Punkty: <b>@zbijak.RundaPunkty</b> </h3>
+        <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> </p><p>Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span></p><p> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
+    </div>
+
+    <button class="btn btn-primary mt-3" @onclick="dajNastepne">Jeszcze raz</button>
+    <a class="btn btn-primary mt-3" href="/">Koniec</a>
+}
+
+
+
+
+
+@code {
+    Szachy.Treningi.Zbijak zbijak = new Szachy.Treningi.Zbijak();
+    static int timeForRound = 3;
+    TimeSpan timeValue = new TimeSpan(0, timeForRound, 0);
+    bool isStopWatchRunning = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Regex fenRegex = new Regex(@"([rnbqkpRNBQKP1-8]+\/){7}[rnbqkpRNBQKP1-8]+");
+        var fensResponse = await Http.GetStringAsync("FENs/MateIn4.json");
+        var fens = fensResponse.Split("\r\n").Where(d => fenRegex.IsMatch(d)).ToArray();
+        zbijak = new Szachy.Treningi.Zbijak(fens);
+    }
+
+    private void PrzycisnietoFigure(Bierka b, MouseEventArgs mouseEventArgs)
+    {
+
+        if (mouseEventArgs.Button == 2) // prawy klawisz
+        {
+            zbijak.PokazBierkiZaatakoanePrzez(b);
+        }
+    }
+
+    private void PuszczonoFigure(Bierka b, MouseEventArgs mouseEventArgs)
+    {
+        if (mouseEventArgs.Button == 2) // prawy klawisz
+        {
+            zbijak.SchowajBierkiZaatakowane();
+        }
+    }
+
+    private async void dajNastepne(MouseEventArgs mouseEventArgs)
+    {
+        timeValue = new TimeSpan(0, timeForRound, 0);
+        isStopWatchRunning = true;
+        ShowPopup = false;
+
+        zbijak.NastepnaRunda();
+        StopWatch();
+        await js.InvokeVoidAsync("PlayAudioFile", "/sounds/start.wav");
+    }
+
+    private async void Kliknieto(Bierka b)
+    {
+        if (zbijak.WskazanoBierke(b))
+        {
+            await js.InvokeVoidAsync("PlayAudioFile", "/sounds/success.mp3");
+        }
+        else
+        {
+            await js.InvokeVoidAsync("PlayAudioFile", "/sounds/failure.wav");
+        }
+    }
+
+    async Task StopWatch()
+    {
+        while (timeValue.Ticks > 0)
+        {
+            await Task.Delay(1000);
+            if (isStopWatchRunning)
+            {
+                timeValue = timeValue.Subtract(new TimeSpan(0, 0, 1));
+                StateHasChanged();
+            }
+        }
+        if (timeValue.Ticks <= 0)
+        {
+            PodsumujRunde();
+            await js.InvokeVoidAsync("PlayAudioFile", "/sounds/trumpets.mp3");
+        }
+    }
+
+    bool ShowPopup = false;
+    private void PodsumujRunde()
+    {
+        ShowPopup = true;
+        StateHasChanged();
+    }
+}
+
+

@@ -33,8 +33,8 @@ namespace SzkolneGryEdukacyjne
             services.AddScoped(sp =>
                     new HttpClient
                     {
-                        BaseAddress = new Uri("https://localhost:44343/")
-                        //BaseAddress = new Uri("http://szkolnegryedukacyjne.pl/")
+                        //BaseAddress = new Uri("https://localhost:44343/")
+                        BaseAddress = new Uri("http://szkolnegryedukacyjne.pl/")
                     });
             services.AddServerSideBlazor().AddCircuitOptions(options => { options.DetailedErrors = true; });
         }

@@ -17,6 +17,8 @@ namespace Szachy.Treningi
 
         public int RundaDobre = 0;
         public int RundaBledy = 0;
+        public int RundaZadania = 0;
+        public int RundaPunkty => RundaZadania * 2 + RundaDobre - RundaBledy * 2;
 
         public Zbijak(string[] fens)
         {
@@ -49,7 +51,8 @@ namespace Szachy.Treningi
                 atakiZnalezione.Add(b);
                 if(atakiDoZnalezienia.Except(atakiZnalezione).Count() == 0)
                 {
-                    NastepnaRunda();
+                    NastepnaPozycja();
+                    RundaZadania++;
                 }
                 RundaDobre++;
 
@@ -65,14 +68,16 @@ namespace Szachy.Treningi
 
         public void NastepnaRunda()
         {
-            NastepnaPozycja();
-            bledy = 0;
             RundaDobre = 0;
             RundaBledy = 0;
+            RundaZadania = 0;
+
+            NastepnaPozycja();
         }
 
         private void NastepnaPozycja()
         {
+            bledy = 0;
             do
             {
                 szachownica.WgrajFEN(fenRepository[random.Next(0, fenRepository.Count())]);
