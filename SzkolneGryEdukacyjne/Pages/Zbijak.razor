@@ -11,7 +11,7 @@
 
 @if (!ShowPopup)
 {
-    <h3>Do znalezienia: <b>@zbijak.atakiDoZnalezienia.Except(zbijak.atakiZnalezione).Count()</b> Błędy: <b>@zbijak.bledy</b></h3>
+    <h3>Wskaż zaatakowane bierki</h3>
 
     <table class="szachownica">
         <tbody>
@@ -27,7 +27,11 @@
                         <td class="pole @klasaKoloru @podglad @zaznaczenie">
                             @if (bierka != null)
                             {
-                                <img src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                                <img class="pole" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                            }
+                            else
+                            {
+                            <span>&nbsp;</span>
                             }
                         </td>
                     }
@@ -36,22 +40,28 @@
         </tbody>
     </table>
 
-    <div>
-        <h3>Twój wynik: <b>@zbijak.RundaPunkty</b> Czas: <span class="@(timeValue < new TimeSpan(0,1,0) ? "koniecCzasu" : "")"><b>@timeValue</b></span></h3>
-        <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
-    </div>
+    <div class="podszachownica">
+        <div class="float-left w-50">
+           <h3> Zostało: <b>@zbijak.atakiDoZnalezienia.Except(zbijak.atakiZnalezione).Count()</b> </h3>
+           <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span> Punkty: <b>@zbijak.RundaPunkty</b></p>
+         </div>
+        <div class="float-right w-50">
+            <h3 class="text-right"><span class="@(timeValue < new TimeSpan(0,1,0) ? "koniecCzasu" : "")"><b>@timeValue</b></span></h3>
+            <button class="btn btn-primary mt-3 float-right" @onclick="dajNastepne">@Zaczynamy</button>
+            </div>
+        </div>
 
-    <button class="btn btn-primary mt-3" @onclick="dajNastepne">Zaczynamy</button>
+   
 }
 else
 {
-    <div class="szachownica">
-        <h3>Punkty: <b>@zbijak.RundaPunkty</b> </h3>
-        <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> </p><p>Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span></p><p> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
-    </div>
-
+<div class="szachownica">
+    <h3>Punkty: <b>@zbijak.RundaPunkty</b> </h3>
+    <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> </p><p>Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span></p><p> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
     <button class="btn btn-primary mt-3" @onclick="dajNastepne">Jeszcze raz</button>
-    <a class="btn btn-primary mt-3" href="/">Koniec</a>
+</div>
+
+    
 }
 
 
@@ -63,6 +73,7 @@ else
     static int timeForRound = 3;
     TimeSpan timeValue = new TimeSpan(0, timeForRound, 0);
     bool isStopWatchRunning = false;
+    string Zaczynamy = "Zaczynamy";
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,12 +102,17 @@ else
 
     private async void dajNastepne(MouseEventArgs mouseEventArgs)
     {
+        Zaczynamy = "Od nowa";
         timeValue = new TimeSpan(0, timeForRound, 0);
-        isStopWatchRunning = true;
+        
         ShowPopup = false;
 
         zbijak.NastepnaRunda();
-        StopWatch();
+        if(!isStopWatchRunning) 
+        {
+            isStopWatchRunning = true;
+            StopWatch();
+        }
         await js.InvokeVoidAsync("PlayAudioFile", "/sounds/start.wav");
     }
 

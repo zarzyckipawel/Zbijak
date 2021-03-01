@@ -117,18 +117,50 @@ app {
     color: red;
 }
 
-.szachownica {
-    width: 400px;
-    height: 400px;
+
+
+@media all and (min-width:768px)  {
+    .szachownica {
+        width: 480px;
+        height: 480px;
+    }
+
+
+    .rzad {
+        height: 60px;
+    }
+
+    .pole {
+        padding:0px;
+        height: 60px;
+        width: 60px;
+    }
+
+    .podszachownica {
+        width: 480px;
+    }
 }
 
-.rzad {
-    height: 50px;
-}
+@media all and (max-width:768px) {
+    .szachownica {
+        width: 96vmin;
+        height: 96vmin;
+    }
 
-.pole {
-    height: 50px;
-    width: 50px;
+
+    .rzad {
+        height: 11vmin;
+    }
+
+    .pole {
+        padding: 0px;
+        height: 11vmin;
+        width: 11vmin;
+    }
+
+    .podszachownica {
+        width: 96vmin;
+    }
 }
 
 

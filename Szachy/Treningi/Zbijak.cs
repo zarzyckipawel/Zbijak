@@ -46,8 +46,12 @@ namespace Szachy.Treningi
         public bool WskazanoBierke(Bierka b)
         {
             
-            if (atakiDoZnalezienia.Except(atakiZnalezione).Contains(b))
+            if (atakiDoZnalezienia.Contains(b))
             {
+                if(atakiZnalezione.Contains(b))
+                {
+                    return true;
+                }
                 atakiZnalezione.Add(b);
                 if(atakiDoZnalezienia.Except(atakiZnalezione).Count() == 0)
                 {
