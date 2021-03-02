@@ -19,6 +19,11 @@ namespace Szachy
             return GetBierki().SelectMany(d => d.DajZaatakowaneBierki()).Distinct().ToList();
         }
 
+        internal IEnumerable<Pole> WybierzLegalneRuchy(Bierka bierka, IEnumerable<Pole> ruchy)
+        {
+            return  ruchy.Where(ruch => !this.CzyNaSkutekTegoRuchuZostanieZaatakowanyNaszKrol(bierka.Pole, ruch));
+        }
+
         internal bool CzyNaSkutekTegoRuchuZostanieZaatakowanyNaszKrol(Pole skad, Pole dokad)
         {
             var naszKolor = skad.Bierka.Kolor;

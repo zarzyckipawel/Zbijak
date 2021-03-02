@@ -100,6 +100,23 @@ namespace SzachyTests
             Assert.AreEqual(0, Pion.DajDostepnePola().Count());
         }
 
+        [TestMethod]
+        public void GdyZaatakowanyNaszKrolToMusimyGoZAtakuZabrac()
+        {
+            var szachownica = new Szachy.Szachownica();
+            szachownica.WgrajFEN("8/8/8/8/8/r1KP4/8/8");
+            var Pion = szachownica.GetPole('d', 3).Bierka;
+            var Krol = szachownica.GetPole('c', 3).Bierka;
+            Assert.AreEqual(0, Pion.DajDostepnePola().Count());
+            Assert.AreEqual(6, Krol.DajDostepnePola().Count());
+            Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('b', 2)));
+            Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('c', 2)));
+            Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('d', 2)));
+            Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('b', 4)));
+            Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('c', 4)));
+            Assert.IsTrue(Krol.DajDostepnePola().Contains(szachownica.GetPole('d', 4)));
+        }
+
 
 
     }

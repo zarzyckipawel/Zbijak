@@ -16,7 +16,7 @@ namespace Szachy
         protected abstract IEnumerable<Pole> DajRuchyZgodneZZasadaDzialaniaTejBierki();
         public IEnumerable<Pole> DajDostepnePola()
         {
-            return DajRuchyZgodneZZasadaDzialaniaTejBierki().Where(ruch => !Szachownica.CzyNaSkutekTegoRuchuZostanieZaatakowanyNaszKrol(Pole, ruch));
+            return Szachownica.WybierzLegalneRuchy(this, DajRuchyZgodneZZasadaDzialaniaTejBierki());
         }
 
         public IEnumerable<Bierka> DajZaatakowaneBierki()
