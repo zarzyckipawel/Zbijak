@@ -10,7 +10,7 @@ namespace Szachy
         {
         }
 
-        public override IEnumerable<Pole> DajDostepnePola()
+        protected override IEnumerable<Pole> DajRuchyZgodneZZasadaDzialaniaTejBierki()
         {
             var ruchySkoczka = new[] { (-1, -2), (-2,-1), (1,2), (2,1), (-1, 2), (1, -2), (2, -1), (-2, 1)};
 
@@ -18,7 +18,7 @@ namespace Szachy
             {
                 var rzad = Pole.Rzad + ruch.Item1;
                 var kolumna = Pole.Kolumna + ruch.Item2;
-                if(!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, Kolor))
+                if (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, Kolor))
                 {
                     yield return Szachownica.GetPole(rzad, kolumna);
                 }

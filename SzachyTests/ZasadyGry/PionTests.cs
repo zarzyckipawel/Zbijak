@@ -91,6 +91,15 @@ namespace SzachyTests
             Assert.IsTrue(Pion.DajDostepnePola().Contains(szachownica.GetPole('b', 3)));
         }
 
+        [TestMethod]
+        public void OdslonaAtakuNaKrolaJuzNieLegalna()
+        {
+            var szachownica = new Szachy.Szachownica();
+            szachownica.WgrajFEN("8/8/8/8/8/rPK5/8/8");
+            var Pion = szachownica.GetPole('b', 3).Bierka;
+            Assert.AreEqual(0, Pion.DajDostepnePola().Count());
+        }
+
 
 
     }

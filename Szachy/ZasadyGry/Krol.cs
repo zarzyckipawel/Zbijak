@@ -10,16 +10,15 @@ namespace Szachy
         {
         }
 
-        public override IEnumerable<Pole> DajDostepnePola()
+        protected override IEnumerable<Pole> DajRuchyZgodneZZasadaDzialaniaTejBierki()
         {
             var kierunki = new[] { (-1, 0), (0, 1), (0, -1), (1, 0), (-1, -1), (-1, 1), (1, -1), (1, 1) };
             foreach (var kierunek in kierunki)
             {
                 var kolumna = this.Pole.Kolumna + kierunek.Item1;
                 var rzad = this.Pole.Rzad + kierunek.Item2;
-
                 if (!Szachownica.PoleNaKtorymNieMoznaPostawicFigury(rzad, kolumna, this.Kolor))
-                {
+                { 
                     yield return Szachownica.GetPole(rzad, kolumna);
                 }
             }

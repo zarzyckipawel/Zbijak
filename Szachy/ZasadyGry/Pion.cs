@@ -10,7 +10,7 @@ namespace Szachy
         {
         }
 
-        public override IEnumerable<Pole> DajDostepnePola()
+        protected override IEnumerable<Pole> DajRuchyZgodneZZasadaDzialaniaTejBierki()
         {
             var kierunek = Kolor == Kolor.Bialy ? -1 : 1;
             var kolorPrzeciwnika = Kolor == Kolor.Bialy ? Kolor.Czarny : Kolor.Bialy;

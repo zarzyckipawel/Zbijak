@@ -19,6 +19,15 @@ namespace Szachy
             return GetBierki().SelectMany(d => d.DajZaatakowaneBierki()).Distinct().ToList();
         }
 
+        internal bool CzyNaSkutekTegoRuchuZostanieZaatakowanyNaszKrol(Pole skad, Pole dokad)
+        {
+            var naszKolor = skad.Bierka.Kolor;
+            var szachownica = new Szachownica();
+            szachownica.WgrajFEN(this.GetFEN());
+            szachownica.WykonajRuch(skad, dokad);
+            return szachownica.GetZaataKowaneBierki().Where(e => e.Kolor == naszKolor && e is Krol).Any();
+        }
+
         public Szachownica()
         {
             var pola = new List<Pole>();
@@ -34,7 +43,17 @@ namespace Szachy
             }
             Pola = pola;
         }
-        
+
+        internal void WykonajRuch(Pole zPola, Pole naPole)
+        {
+            //zabierz bierke
+            var bierka = this.GetPole(zPola.Rzad, zPola.Kolumna).Bierka;
+            bierka.Pole.Bierka = null;
+            //postaw na nowym polu
+            bierka.Pole = this.GetPole(naPole.Rzad, naPole.Kolumna);
+            bierka.Pole.Bierka = bierka;
+        }
+
         internal bool PoleNaKtorymNieMoznaPostawicFigury(int rzad, int kolumna, Kolor kolor)
         {
             return PozaSzachownica(rzad, kolumna) || PoleZajetePrzezWlasnaFigure(rzad, kolumna, kolor);

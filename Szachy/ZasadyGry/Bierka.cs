@@ -13,11 +13,15 @@ namespace Szachy
 
         public Pole Pole { get; set; }
 
-        public abstract IEnumerable<Pole> DajDostepnePola();
+        protected abstract IEnumerable<Pole> DajRuchyZgodneZZasadaDzialaniaTejBierki();
+        public IEnumerable<Pole> DajDostepnePola()
+        {
+            return DajRuchyZgodneZZasadaDzialaniaTejBierki().Where(ruch => !Szachownica.CzyNaSkutekTegoRuchuZostanieZaatakowanyNaszKrol(Pole, ruch));
+        }
 
         public IEnumerable<Bierka> DajZaatakowaneBierki()
         {
-            return DajDostepnePola().Where(d => d.Bierka != null).Select(d => d.Bierka).ToList();
+            return DajRuchyZgodneZZasadaDzialaniaTejBierki().Where(d => d.Bierka != null).Select(d => d.Bierka).ToList();
         }
 
         public Bierka(Szachownica sz, Kolor k)

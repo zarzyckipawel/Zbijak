@@ -10,7 +10,7 @@ namespace Szachy
         {
         }
 
-        public override IEnumerable<Pole> DajDostepnePola()
+        protected override IEnumerable<Pole> DajRuchyZgodneZZasadaDzialaniaTejBierki()
         {
             var kierunki = new[] { (-1, -1), (-1, 1), (1, -1), (1, 1) };
             return IdzWKierunkach(kierunki);

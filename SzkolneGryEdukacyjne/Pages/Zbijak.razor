@@ -46,7 +46,7 @@
            <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span> Punkty: <b>@zbijak.RundaPunkty</b></p>
          </div>
         <div class="float-right w-50">
-            <h3 class="text-right"><span class="@(timeValue < new TimeSpan(0,1,0) ? "koniecCzasu" : "")"><b>@timeValue</b></span></h3>
+            <h3 class="text-right"><span class="@(timeValue < new TimeSpan(0,1,0) ? "koniecCzasu" : "")"><b>@(timeValue.ToString(@"mm\:ss"))</b></span></h3>
             <button class="btn btn-primary mt-3 float-right" @onclick="dajNastepne">@Zaczynamy</button>
             </div>
         </div>
@@ -69,10 +69,13 @@ else
 
 
 @code {
+    private System.Threading.Timer _timer;
+    private DateTime startTime;
+
+
     Szachy.Treningi.Zbijak zbijak = new Szachy.Treningi.Zbijak();
     static int timeForRound = 3;
     TimeSpan timeValue = new TimeSpan(0, timeForRound, 0);
-    bool isStopWatchRunning = false;
     string Zaczynamy = "Zaczynamy";
 
     protected override async Task OnInitializedAsync()
@@ -103,17 +106,14 @@ else
     private async void dajNastepne(MouseEventArgs mouseEventArgs)
     {
         Zaczynamy = "Od nowa";
-        timeValue = new TimeSpan(0, timeForRound, 0);
-        
-        ShowPopup = false;
 
+        ShowPopup = false;
         zbijak.NastepnaRunda();
-        if(!isStopWatchRunning) 
-        {
-            isStopWatchRunning = true;
-            StopWatch();
-        }
+
         await js.InvokeVoidAsync("PlayAudioFile", "/sounds/start.wav");
+
+        timeValue = new TimeSpan(0, timeForRound, 0);
+        Start();
     }
 
     private async void Kliknieto(Bierka b)
@@ -130,20 +130,33 @@ else
 
     async Task StopWatch()
     {
-        while (timeValue.Ticks > 0)
-        {
-            await Task.Delay(1000);
-            if (isStopWatchRunning)
-            {
-                timeValue = timeValue.Subtract(new TimeSpan(0, 0, 1));
-                StateHasChanged();
-            }
-        }
+        
+        timeValue = new TimeSpan(0, 3, 0).Subtract(DateTime.Now - this.startTime);
+        await InvokeAsync(StateHasChanged);
+
         if (timeValue.Ticks <= 0)
         {
-            PodsumujRunde();
+            await InvokeAsync(Stop);
+            await InvokeAsync(PodsumujRunde);
             await js.InvokeVoidAsync("PlayAudioFile", "/sounds/trumpets.mp3");
         }
+    }
+
+    public void Start()
+    {
+        Stop();
+        this.startTime = DateTime.Now;
+        _timer = new System.Threading.Timer(async _ =>
+        {
+            await StopWatch();
+
+        }, null, 0, 1000);
+    }
+
+    public void Stop()
+    {
+        _timer?.Dispose();
+        _timer = null;
     }
 
     bool ShowPopup = false;
