@@ -15,6 +15,7 @@ namespace Szachy.Treningi
         public IList<string> fenRepository = new List<String>(); 
         public Random random = new Random();
 
+        public IEnumerable<int> wyniki = new List<int>();
         public int RundaDobre = 0;
         public int RundaBledy = 0;
         public int RundaZadania = 0;

@@ -56,8 +56,13 @@
 else
 {
 <div class="szachownica">
-    <h3>Punkty: <b>@zbijak.RundaPunkty</b> </h3>
-    <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> </p><p>Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span></p><p> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
+        <h3>Punkty: <b>@zbijak.RundaPunkty</b> </h3>
+        <h2>Dzisiejsze najlepsze:  </h2>
+        @foreach (var wynik in zbijak.wyniki)
+        {
+            <p>@wynik</p>
+        }
+        <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> </p><p>Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span></p><p> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
     <button class="btn btn-primary mt-3" @onclick="dajNastepne">Jeszcze raz</button>
 </div>
 
@@ -74,7 +79,7 @@ else
 
 
     Szachy.Treningi.Zbijak zbijak = new Szachy.Treningi.Zbijak();
-    static int timeForRound = 3;
+    static int timeForRound = 3;//in minutes
     TimeSpan timeValue = new TimeSpan(0, timeForRound, 0);
     string Zaczynamy = "Zaczynamy";
 
@@ -130,8 +135,8 @@ else
 
     async Task StopWatch()
     {
-        
-        timeValue = new TimeSpan(0, 3, 0).Subtract(DateTime.Now - this.startTime);
+
+        timeValue = new TimeSpan(0, timeForRound, 0).Subtract(DateTime.Now - this.startTime);
         await InvokeAsync(StateHasChanged);
 
         if (timeValue.Ticks <= 0)
@@ -163,6 +168,10 @@ else
     private void PodsumujRunde()
     {
         ShowPopup = true;
+
+        File.AppendAllText("rekordy.txt", $"\n{zbijak.RundaPunkty}");
+        var lines = File.ReadAllLines("rekordy.txt");
+        zbijak.wyniki = lines.Where(n => !String.IsNullOrWhiteSpace(n)).Select(n => int.Parse(n.Trim())).OrderByDescending(d => d).Take(5);
         StateHasChanged();
     }
 }

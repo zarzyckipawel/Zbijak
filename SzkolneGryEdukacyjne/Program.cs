@@ -23,6 +23,11 @@ namespace SzkolneGryEdukacyjne
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+
+                    webBuilder.ConfigureKestrel(options =>
+                    {
+                        options.Listen(System.Net.IPAddress.Any, 44343); // Listen on all network interfaces for port 5000
+                    });
                 });
     }
 }
