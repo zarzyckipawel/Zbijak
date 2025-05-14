@@ -1,0 +1,287 @@
+﻿@page "/"
+@using System.Security.Cryptography
+@using System.Text
+@using Szachy
+@using System.IO
+@using System.Text.RegularExpressions
+@using System.Net.Http
+@inject HttpClient Http
+@inject IJSRuntime js;
+
+@if (!ShowPopup)
+{
+    <table class="szachownica">
+        <tbody>
+            @for (int rzad = 1; rzad < 9; rzad++)
+            {
+                <tr class="rzad">
+                    @for (int kolumna = 1; kolumna < 9; kolumna++)
+                    {
+                        var bierka = zbijak.szachownica.GetPole(rzad, kolumna).Bierka;
+                        var klasaKoloru = zbijak.szachownica.GetPole(rzad, kolumna).Kolor == Kolor.Bialy ? "bialy" : "czarny";
+                        var podglad = zbijak.bierkiZaznaczone.Contains(bierka) ? "podglad" : "";
+                        var zaznaczenie = zbijak.atakiZnalezione.Contains(bierka) ? "zaznaczenie" : "";
+                        <td class="pole @klasaKoloru @podglad @zaznaczenie">
+                            @if (bierka != null)
+                            {
+                                <img class="pole" src="@PiecesHelper.GetImageSrc(bierka)" @onclick="() => Kliknieto(bierka)" @onmousedown="args => PrzycisnietoFigure(bierka, args)" @onmouseup="args => PuszczonoFigure(bierka, args)" />
+                            }
+                            else
+                            {
+                                <span>&nbsp;</span>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="podszachownica">
+        <div>
+            <div class="float-left w-50">
+                <h3> @Name Zostało: <b>@zbijak.atakiDoZnalezienia.Except(zbijak.atakiZnalezione).Count()</b> </h3>
+                <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span> Punkty: <b>@zbijak.RundaPunkty</b></p>
+            </div>
+            <div class="float-right w-50">
+                <h3 class="text-right"><span class="@(timeValue < new TimeSpan(0,1,0) ? "koniecCzasu" : "")"><b>@(timeValue.ToString(@"mm\:ss"))</b></span></h3>            
+                <button class="btn btn-primary mt-3 float-right" @onclick="dajNastepne">@Zaczynamy </button>
+            </div>
+        </div>
+
+
+        <div class="w-100"></div>
+    </div>
+}
+else
+{
+    <div class="szachownica">
+        @if (zbijak.RundaPunkty != 0)
+        {
+            <h3>Punkty: <b>@zbijak.RundaPunkty</b> </h3>
+
+            <p>Ustawień: <span class="dobrze"><b>@zbijak.RundaZadania</b></span> </p><p>Poprawnie: <span class="dobrze"><b>@zbijak.RundaDobre</b></span></p><p> Błędy: <span class="blednie"><b>@zbijak.RundaBledy</b></span></p>
+        }
+        <div class="float-left">
+            <p class="float-left w-50" type="text">Twoje imię: </p>
+            <input class="float-right w-50" @bind="Name" type="text" />
+        </div>
+        <button class="btn btn-primary mt-3" @onclick="dajNastepne">Zaczynamy! </button>
+    </div>
+}
+
+@code {
+    private System.Threading.Timer _timer;
+    private DateTime startTime;
+
+
+    Szachy.Treningi.Zbijak zbijak = new Szachy.Treningi.Zbijak();
+    static int timeForRound = 3;//in minutes
+    TimeSpan timeValue = new TimeSpan(0, timeForRound, 0);
+    string Zaczynamy = "Zaczynamy";
+    private string Name { get; set; } = "";
+
+    public IEnumerable<string> wyniki = new List<string>();
+    public IEnumerable<string> wynikiTygodnia = new List<string>();
+    public IEnumerable<string> osobiste = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        OdswierzRekordy();
+        Regex fenRegex = new Regex(@"([rnbqkpRNBQKP1-8]+\/){7}[rnbqkpRNBQKP1-8]+");
+        var fensResponse = await Http.GetStringAsync("FENs/MateIn4.json");
+        var fens = fensResponse.Split("\r\n").Where(d => fenRegex.IsMatch(d)).ToArray();
+        zbijak = new Szachy.Treningi.Zbijak(fens);
+    }
+
+    private void PrzycisnietoFigure(Bierka b, MouseEventArgs mouseEventArgs)
+    {
+
+        if (mouseEventArgs.Button == 2) // prawy klawisz
+        {
+            zbijak.PokazBierkiZaatakoanePrzez(b);
+        }
+    }
+
+    private void PuszczonoFigure(Bierka b, MouseEventArgs mouseEventArgs)
+    {
+        if (mouseEventArgs.Button == 2) // prawy klawisz
+        {
+            zbijak.SchowajBierkiZaatakowane();
+        }
+    }
+
+    private async void dajNastepne(MouseEventArgs mouseEventArgs)
+    {
+        Zaczynamy = "Od nowa";
+
+        ShowPopup = false;
+        zbijak.NastepnaRunda();
+
+        await js.InvokeVoidAsync("PlayAudioFile", "/wp-content/uploads/2025/zbijak/sounds/start.wav");
+
+        timeValue = new TimeSpan(0, timeForRound, 0);
+        Start();
+    }
+
+    private async void Kliknieto(Bierka b)
+    {
+        if (zbijak.WskazanoBierke(b))
+        {
+            await js.InvokeVoidAsync("PlayAudioFile", "/wp-content/uploads/2025/zbijak/sounds/success.mp3");
+        }
+        else
+        {
+            await js.InvokeVoidAsync("PlayAudioFile", "/wp-content/uploads/2025/zbijak/sounds/failure.wav");
+        }
+    }
+
+    async Task StopWatch()
+    {
+
+        timeValue = new TimeSpan(0, timeForRound, 0).Subtract(DateTime.Now - this.startTime);
+        await InvokeAsync(StateHasChanged);
+
+        if (timeValue.Ticks <= 0)
+        {
+            await InvokeAsync(Stop);
+            await InvokeAsync(PodsumujRunde);
+            await js.InvokeVoidAsync("PlayAudioFile", "/wp-content/uploads/2025/zbijak/sounds/trumpets.mp3");
+        }
+    }
+
+    public void Start()
+    {
+        Stop();
+        OdswierzRekordy();
+        this.startTime = DateTime.Now;
+        _timer = new System.Threading.Timer(async _ =>
+        {
+            await StopWatch();
+
+        }, null, 0, 1000);
+    }
+
+    public void Stop()
+    {
+        _timer?.Dispose();
+        _timer = null;
+    }
+
+    bool ShowPopup = true;
+    private async void PodsumujRunde()
+    {
+        await ZapiszWynik();
+        ShowPopup = true;
+        var filePath = "rekordy_tygodnia.txt";
+
+        if (File.Exists(filePath))
+        {
+            // Get the last write time of the file
+            DateTime lastModified = File.GetCreationTime(filePath);
+
+            // Check if the file is older than a week
+            if ((DateTime.Now - lastModified).TotalDays > 7)
+            {
+                try
+                {
+                    File.Delete(filePath);
+                    Console.WriteLine("File deleted successfully.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting file: {ex.Message}");
+                }
+            }
+        }
+
+        File.AppendAllText("rekordy.txt", $"\n{zbijak.RundaPunkty} {Name}");
+        File.AppendAllText("rekordy_tygodnia.txt", $"\n{zbijak.RundaPunkty} {Name}");
+        OdswierzRekordy();
+    }
+
+    private void OdswierzRekordy()
+    {
+        var lines = File.Exists("rekordy.txt") ? File.ReadAllLines("rekordy.txt") : new string[0];
+        wyniki = lines.Where(n => !String.IsNullOrWhiteSpace(n)).OrderByDescending(d => int.Parse(d.Split(" ")[0])).Take(5);
+        osobiste = lines.Where(n => !String.IsNullOrWhiteSpace(n))
+        .GroupBy(d => d.Split(" ").Count() > 1 ? d.Split(" ")[1] : "")
+        .Select(group => new
+        {
+            Name = group.Key,
+            BestResult = group.Max(el => int.Parse(el.Split(" ")[0]))  // Get the best (max) result per person
+
+        })
+        .OrderByDescending(d => d.BestResult).Select(el => $"{el.BestResult} {el.Name}");
+        lines = File.Exists("rekordy_tygodnia.txt") ? File.ReadAllLines("rekordy_tygodnia.txt") : new string[0];
+        wynikiTygodnia = lines.Where(n => !String.IsNullOrWhiteSpace(n)).OrderByDescending(d => int.Parse(d.Split(" ")[0])).Take(5);
+        StateHasChanged();
+    }
+
+
+    public class PiecesHelper
+    {
+        public static string GetImageSrc(Bierka b)
+        {
+            var literaKoloru = b.Kolor == Kolor.Bialy ? "w" : "b";
+            var literaBierki = DajLitereRodzajuBierki(b);
+            return $"sets/standard/{literaBierki}{literaKoloru}.png";
+        }
+
+        private static string DajLitereRodzajuBierki(Bierka b)
+        {
+            if (b is Krol) return "k";
+            if (b is Hetman) return "q";
+            if (b is Wieza) return "r";
+            if (b is Goniec) return "b";
+            if (b is Skoczek) return "n";
+            if (b is Pion) return "p";
+            throw new Exception("nie ma takiej bierki");
+        }
+    }
+
+    public class WynikPost
+    {
+        public string title { get; set; }
+        public Dictionary<string, object> fields { get; set; }
+    }
+
+    string GenerateSignature(string name, int points, string date, string secretKey)
+    {
+        var data = $"{name}:{points}:{date}:{secretKey}";
+        using var sha = SHA256.Create();
+        var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(data));
+        return Convert.ToBase64String(hash);
+    }
+
+    async Task ZapiszWynik()
+    {
+        var date = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+        var wynik = new WynikPost
+            {
+                fields = new Dictionary<string, object>
+                {
+                    { "imie", Name },
+                    { "punkty", zbijak.RundaPunkty },
+                    { "data", date},
+                    { "secret", GenerateSignature(Name, zbijak.RundaPunkty, date, "tajnehaslo")}
+                }
+            };
+
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://szkolnegryedukacyjne.pl/wp-json/zbijak/v1/dodaj-wynik");
+        request.Content = JsonContent.Create(wynik);
+
+        // jeśli API wymaga autoryzacji – można dodać nagłówek JWT/Bearer tu
+
+        var response = await Http.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Zapisano wynik!");
+        }
+        else
+        {
+            Console.WriteLine("Błąd zapisu: " + response.StatusCode);
+        }
+    }
+}
